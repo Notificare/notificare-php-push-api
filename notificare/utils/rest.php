@@ -287,11 +287,8 @@ class HandlerApiRest{
 			CURLOPT_USERAGENT => 'PH8 REST Client 0.01'
 		);
 
-		var_dump($options);
 		curl_setopt_array($this->stream, $options);
-		
-		
-		
+
 		switch($this->method){
 			case 'GET':
 				curl_setopt($this->stream, CURLOPT_HTTPGET, true);
