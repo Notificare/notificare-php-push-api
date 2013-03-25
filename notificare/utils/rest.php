@@ -279,7 +279,7 @@ class HandlerApiRest{
 		}
 		
 		$this->setTranslatedUrl($destinationUrl);
-		$registry = & Registry :: instance();
+
 		$options = array(
 			CURLOPT_URL => $this->translatedUrl,
 			CURLOPT_RETURNTRANSFER => true,
@@ -287,6 +287,7 @@ class HandlerApiRest{
 			CURLOPT_USERAGENT => 'PH8 REST Client 0.01'
 		);
 
+		var_dump($options);
 		curl_setopt_array($this->stream, $options);
 		
 		
