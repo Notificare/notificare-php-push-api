@@ -37,10 +37,20 @@ class HandlerApiRest{
 	 */
 	protected $queryParams;
 	/**
+	 * the headers to send along with the call
+	 * @var {Object}
+	 */
+	protected $headers;
+	/**
 	 * the body entity to use with the call (only needed with POST or PUT methods)
 	 * @var unknown_type
 	 */
 	protected $body;
+	/**
+	 * The full path of the file to upload
+	 * @var {String}
+	 */
+	protected $file;
 	/**
 	 * the method to use (GET,POST,PUT,DELETE)
 	 * @var string
@@ -93,8 +103,6 @@ class HandlerApiRest{
 	public function __construct($baseUrl = null){
 		if(!is_null($baseUrl)){
 			$this->setBaseUrl($baseUrl);
-		}else{
-			$this->setBaseUrl('https://push.notifica.re');
 		}
 		$this->test = false;
 	}
@@ -173,6 +181,35 @@ class HandlerApiRest{
 		return $this->queryParams;
 	}
 	/**
+	 * Add a HTTP header
+	 * @param {String} $key
+	 * @param {String} $value
+	 */
+	public function setHeader($key, $value) {
+		$this->headers[$key] = $value;
+	}
+	/**
+	 * Get a HTTP header
+	 * @param {String} $key
+	 * @return {String} Header value
+	 */
+	public function getHeader($key) {
+		return $this->header[$key];
+	}
+	/**
+	 * Get headers as an array of strings
+	 * @return {String}[]
+	 */
+	protected function getHeadersAsArray() {
+		$result = array();
+		if (is_array($this->headers)) {
+			foreach ($this->headers as $key => $value) {
+				$result[]= $key . ': ' . $value;
+			}
+		}
+		return $result;
+	}
+	/**
 	 * setter $this->body
 	 * @param $body
 	 */
@@ -185,6 +222,20 @@ class HandlerApiRest{
 	 */
 	public function getBody(){
 		return $this->body;
+	}
+	/**
+	 * Set the file path
+	 * @param {String} $path
+	 */
+	public function setFile($path) {
+		$this->file = $path;
+	}
+	/**
+	 * Get the file path
+	 * @return {String}
+	 */
+	public function getFile() {
+		return $this->file;
 	}
 	/**
 	 * setter $this->method
@@ -268,14 +319,14 @@ class HandlerApiRest{
 			curl_setopt($this->stream, CURLOPT_USERPWD, $this->username . ":" . $this->password);
 		}
 		
-		if($this->body){
-			$headers = array('Content-Type: application/json');
-		}else{
-			$headers = array();			
+		$headers = array();
+		
+		if ($this->body) {
+			$this->setHeader('Content-Type', 'application/json');
 		}
 		
-		if($this->test){
-			$headers = array('Content-Type: application/json','x-notificare-test: true');	
+		if ($this->test) {
+			$this->setHeader('x-notificare-test', 'true');	
 		}
 		
 		$this->setTranslatedUrl($destinationUrl);
@@ -283,7 +334,7 @@ class HandlerApiRest{
 		$options = array(
 			CURLOPT_URL => $this->translatedUrl,
 			CURLOPT_RETURNTRANSFER => true,
-			CURLOPT_HEADER => true,
+			CURLOPT_HEADER => false,
 			CURLOPT_USERAGENT => 'PH8 REST Client 0.01'
 		);
 
@@ -294,14 +345,25 @@ class HandlerApiRest{
 				curl_setopt($this->stream, CURLOPT_HTTPGET, true);
 				break;
 			case 'POST':
-				curl_setopt($this->stream, CURLOPT_POST, true);
-				curl_setopt($this->stream, CURLOPT_POSTFIELDS, json_encode($this->body));
-				curl_setopt($this->stream, CURLOPT_HTTPHEADER,$headers);
+
+				if ($this->file) {
+					curl_setopt($this->stream, CURLOPT_CUSTOMREQUEST, "POST");
+					curl_setopt($this->stream, CURLOPT_BINARYTRANSFER, true);
+					curl_setopt($this->stream, CURLOPT_UPLOAD, true);
+					$fh = fopen($this->getFile(), 'r');
+					curl_setopt($this->stream, CURLOPT_INFILE, $fh);
+					curl_setopt($this->stream, CURLOPT_INFILESIZE, filesize($this->getFile()));
+
+				} else {
+					curl_setopt($this->stream, CURLOPT_POST, true);
+					curl_setopt($this->stream, CURLOPT_POSTFIELDS, json_encode($this->body));
+				}
+				curl_setopt($this->stream, CURLOPT_HTTPHEADER, $this->getHeadersAsArray());
 				break;
 			case 'PUT':
 				curl_setopt($this->stream, CURLOPT_CUSTOMREQUEST, 'PUT');
 				curl_setopt($this->stream, CURLOPT_POSTFIELDS, json_encode($this->body));
-				curl_setopt($this->stream, CURLOPT_HTTPHEADER,$headers);
+				curl_setopt($this->stream, CURLOPT_HTTPHEADER, $this->getHeadersAsArray());
 
 				break;
 			case 'DELETE':
@@ -309,14 +371,14 @@ class HandlerApiRest{
 				break;
 		}
 
+		
 		$result = curl_exec($this->stream);
 		$this->errors = curl_error($this->stream);
-		$this->info = curl_getinfo($this->stream, CURLINFO_HEADER_OUT);
+		$this->info = curl_getinfo($this->stream, CURLINFO_CONTENT_TYPE);
 		$statuscode = curl_getinfo($this->stream, CURLINFO_HTTP_CODE);
 		curl_close($this->stream);
 
-		$splitted = preg_split('#\r?\n\s+#', $result);
-		$this->response = new HandlerApiRestResponse($statuscode, preg_split('#\r?\n#',array_shift($splitted)), implode(' ', $splitted));
+		$this->response = new HandlerApiRestResponse($statuscode,array('Content-Type: '.$this->info), $result);
 		
 		if(!empty($this->handler)){
 			$action = 'handle' . $this->method;

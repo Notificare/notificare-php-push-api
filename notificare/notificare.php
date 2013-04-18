@@ -106,4 +106,28 @@ class NotificareApi extends HandlerApiRest {
 		return $this->call();
 	}
 	
+	/**
+	 * uploadFile
+	 * Upload a file
+	 * @param string $file
+	 */
+	public function uploadFile($file){
+		$this->setResource("/upload");
+		$this->setMethod("POST");
+		$this->setFile($file);
+		return $this->call();
+	}
+	
+	/**
+	 * uploadFile
+	 * Upload a file
+	 * @param string $file
+	 */
+	public function deleteFile($file){
+		$this->setResource("/upload");
+		$this->setMethod("POST");
+		$this->setFile($file);
+		return $this->call();
+	}
+	
 }
