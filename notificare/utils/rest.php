@@ -335,7 +335,7 @@ class HandlerApiRest{
 			CURLOPT_URL => $this->translatedUrl,
 			CURLOPT_RETURNTRANSFER => true,
 			CURLOPT_HEADER => false,
-			CURLOPT_USERAGENT => 'PH8 REST Client 0.01'
+			CURLOPT_USERAGENT => 'PHP REST Client 1.0'
 		);
 
 		curl_setopt_array($this->stream, $options);

@@ -68,8 +68,7 @@ if($result->getStatusCode()=='201'){
 $userID = 'xxxxx';
 
 $body = array(
-		'userID' => null,
-		'deviceID' => $userID,
+		'userID' => $userID,
 		'type' => 're.notifica.notification.Alert',
 		'schedule' => null, //Use date to schedule
 		'message' => 'Your message here',
@@ -104,7 +103,7 @@ if($result->getStatusCode()=='201'){
 }
 
 /**
- * Send to all
+ * Send a broadcast
  *
  */
 
