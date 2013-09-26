@@ -35,6 +35,10 @@ function checkConnectivity() {
 		curl_setopt($stream, CURLOPT_HEADER, 0);
 		curl_setopt($stream, CURLOPT_VERBOSE, 1);
 		curl_setopt($stream, CURLOPT_HTTPGET, 1);
+		/*
+		 * Uncomment the following if you get SSL self-signed certificate errors
+		 */
+		//curl_setopt($stream, CURLOPT_CAINFO, "cacert.pem");
 		curl_setopt($stream, CURLOPT_USERAGENT, "PHP Diagnostics Test 1.0");
 		$result = curl_exec($stream);
 		$error = curl_error($stream);
