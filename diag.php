@@ -1,6 +1,11 @@
 <?php
 /**
  * Diagnostics script for testing requirements and connectivity
+ * 
+ * Run this script from the command line like this:
+ * 
+ * 	php diag.php
+ * 
  * @author Joris Verbogt <joris@notifica.re>
  */
 
@@ -38,7 +43,7 @@ function checkConnectivity() {
 		/*
 		 * Uncomment the following if you get SSL self-signed certificate errors
 		 */
-		//curl_setopt($stream, CURLOPT_CAINFO, "cacert.pem");
+		//curl_setopt($stream, CURLOPT_CAINFO, dirname(__FILE__) . "/cacert.pem");
 		curl_setopt($stream, CURLOPT_USERAGENT, "PHP Diagnostics Test 1.0");
 		$result = curl_exec($stream);
 		$error = curl_error($stream);

@@ -23,6 +23,11 @@ class NotificareApi extends HandlerApiRest {
 		$this->setBaseUrl('https://push.notifica.re');
 		$this->setUsername('YOUR_API_KEY_HERE');
 		$this->setPassword('YOUR_MASTER_SECRET_HERE');
+		/*
+		 * Uncomment if you need your own CA certificate bundle, change the path to the 
+		 * location of your CA bundle. You can use the one provided with this library.
+		 */
+		//$notificare->setCABundlePath('/PATH/TO/YOUR/CABUNDLE');
 	}
 	
 	/**

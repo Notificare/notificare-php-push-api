@@ -7,7 +7,7 @@
  *
  * @author Joel Oliveira <joel@notifica.re>
  *
- * @version 1.0
+ * @version 1.0.1
  * @copyright &copy; 2012-2013 Notificare
  */
 class HandlerApiRest{
@@ -16,6 +16,11 @@ class HandlerApiRest{
 	 * @var string
 	 */
 	protected $baseUrl;
+	/**
+	 * the location of a custom CA bundle
+	 * @var string
+	 */
+	protected $caBundlePath;
 	/**
 	 * the final url of the api
 	 * @var string
@@ -119,6 +124,20 @@ class HandlerApiRest{
 	 */
 	public function getBaseUrl(){
 		return $this->baseUrl;
+	}
+	/**
+	 * setter $this->caBundlePath
+	 * @param $path
+	 */
+	public function setCABundlePath($path){
+		$this->caBundlePath = $path;
+	}
+	/**
+	 * getter $this->caBundlePath
+	 * @return $this->caBundlePath
+	 */
+	public function getCABundlePath(){
+		return $this->caBundlePath;
 	}
 	/**
 	 * setter $this->resource
@@ -337,9 +356,13 @@ class HandlerApiRest{
 			CURLOPT_HEADER => false,
 			CURLOPT_USERAGENT => 'PHP REST Client 1.0'
 		);
-
+		
 		curl_setopt_array($this->stream, $options);
 
+		if ($this->getCABundlePath()) {
+			curl_setopt($this->stream, CURLOPT_CAINFO, $this->getCABundlePath());
+		}
+		
 		switch($this->method){
 			case 'GET':
 				curl_setopt($this->stream, CURLOPT_HTTPGET, true);

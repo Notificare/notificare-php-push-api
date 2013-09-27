@@ -55,7 +55,7 @@ $body = array(
 	
 $result = $notificare->pushToDevice($deviceID,$body);
 
-if($result->getStatusCode()=='201'){
+if ($result->getStatusCode()=='201') {
 	$response = json_decode($result->getBody());
 	var_dump($response);
 }
@@ -158,7 +158,7 @@ if($result->getStatusCode()=='201'){
 
 $notificare->setHeader('Content-type', mime_content_type($_FILES['file']['tmp_name']));
 $notificare->setHeader('Content-length', filesize($_FILES['file']['tmp_name']));
-$result = $notificare->createUpload($_FILES['file']['tmp_name']);
+$result = $notificare->uploadFile($_FILES['file']['tmp_name']);
 if($result->getStatusCode()=='201'){
 	$response = json_decode($result->getBody());
 	var_dump($response);
