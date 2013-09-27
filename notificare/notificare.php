@@ -27,7 +27,7 @@ class NotificareApi extends HandlerApiRest {
 		 * Uncomment if you need your own CA certificate bundle, change the path to the 
 		 * location of your CA bundle. You can use the one provided with this library.
 		 */
-		//$notificare->setCABundlePath('/PATH/TO/YOUR/CABUNDLE');
+		//$this->setCABundlePath('/PATH/TO/YOUR/CABUNDLE');
 	}
 	
 	/**
